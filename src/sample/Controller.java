@@ -8,6 +8,10 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import sample.methods.RectExc;
+import sample.methods.RectIns;
+import sample.methods.Simpson;
+import sample.methods.Trapeze;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -21,6 +25,7 @@ public class Controller {
 private ArrayList<Double> tabx, taby, templist;
 private ArrayList<ArrayList<Double>> subresult;
 private Double h;
+int n;
 
 
     public void calculate(ActionEvent e) {
@@ -48,29 +53,15 @@ private Double h;
                 tabx = new ArrayList<Double>(templist.subList(0, (templist.size()/2)));
                 taby = new ArrayList<Double>(templist.subList(templist.size()/2,templist.size()));
                 templist.clear();
-                h = tabx.get(1) - tabx.get(0);
-                subresult = new ArrayList<ArrayList<Double>>();
-                for(int i = 0; i<tabx.size()-1; i++) {
-                    subresult.add(new ArrayList<Double>());
-                    if(i==0){
-                        for (int j = 1; j <tabx.size(); j++) {
-                            subresult.get(i).add(taby.get(j)-taby.get(j-1));
-                        }
-                    }else {
-                        for (int j = 1; j <tabx.size() - i; j++) {
-                            subresult.get(i).add(subresult.get(i-1).get(j)-subresult.get(i-1).get(j-1));
-                        }
-                    }
-                }
+                RectExc rectExc = new RectExc(tabx, taby);
+                RectIns rectIns = new RectIns(tabx, taby);
+                Simpson simpson = new Simpson(tabx, taby);
+                Trapeze trapeze = new Trapeze(tabx, taby);
 
-                resultout.setText("W"+String.valueOf(tabx.size()-1)+"(x)=");
-                resultout.appendText(String.valueOf(taby.get(0)));
-                for(int i = 0; i<tabx.size()-1; i++) {
-                    resultout.appendText(String.format("%s%.1f%s%d%s%.1f%s%d%s", "+(", subresult.get(i).get(0), "/(",i+1,"!*",h,"^",i+1,"))"));
-                        for (int j = 0; j <i+1; j++) {
-                            resultout.appendText(String.format("%s%.1f%s", "*(x-", tabx.get(j), ")"));
-                        }
-                }
+                resultout.setText("Metoda prostokątów z niedomiarem: "+String.valueOf(rectIns.calculate())+"\n");
+                resultout.appendText("Metoda prostokątów z nadmiarem: "+String.valueOf(rectExc.calculate())+"\n");
+                resultout.appendText("Metoda trapezów: "+String.valueOf(trapeze.calculate())+"\n");
+                resultout.appendText("Metoda Simpsona: "+String.valueOf(simpson.calculate())+"\n");
             } catch (Exception exept) {
                 exept.printStackTrace();
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
